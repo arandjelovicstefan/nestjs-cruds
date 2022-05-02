@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   AfterInsert,
   AfterRemove,
@@ -18,6 +19,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude() //exclude decorator, potreban da ne bi vracao password prilikom get requesta
   password: string;
 
   @AfterInsert() //decorator hook koji ce pozvati funkciju nakon sto insetruje user-a u bazi
