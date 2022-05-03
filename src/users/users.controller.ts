@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,13 +8,15 @@ import {
   Patch,
   Post,
   Query,
-  UseInterceptors,
 } from '@nestjs/common';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CreateUserDTO } from './user-dtos/create-user.dto';
 import { UpdateUserDTO } from './user-dtos/update-user.dto';
+import { UserDTO } from './user-dtos/user.dto';
 import { UsersService } from './users.service';
 
 @Controller('auth')
+@Serialize(UserDTO) // importujemo dekorator na celom kontroleru
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -25,10 +26,12 @@ export class UsersController {
     this.usersService.create(body);
   }
 
-  //kada se parsuje bilo koji deo iz url-a, iako je broj iz url-a uvek dolazi kao string !!
-  @UseInterceptors(ClassSerializerInterceptor) // kazemo da prilikom get requesta koristi interceptore i prosledjujemo mu koje
+  //@UseInterceptors(ClassSerializerInterceptor) // kazemo da prilikom get requesta koristi interceptore i prosledjujemo mu koje
+  // @Serialize(UserDTO)
   @Get('/:id')
+  //kada se parsuje bilo koji deo iz url-a, iako je broj iz url-a uvek dolazi kao string !!
   async findUser(@Param('id') id: 'string') {
+    // console.log('Handler is running');
     //parseInt konvertuje string u integer
     const user = await this.usersService.findOne(parseInt(id));
     if (!user) throw new NotFoundException('User not found');
@@ -38,6 +41,7 @@ export class UsersController {
 
   //koristimo query dekorator jer ocekujemo da se getuju useri sa query parametrom
   //npr: auth?email=asd@gmail.com
+  // @Serialize(UserDTO)
   @Get()
   findAllUsers(@Query('email') email?: string) {
     return this.usersService.find(email);
