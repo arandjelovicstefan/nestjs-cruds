@@ -10,6 +10,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { AuthService } from './auth.service';
 import { CreateUserDTO } from './user-dtos/create-user.dto';
 import { UpdateUserDTO } from './user-dtos/update-user.dto';
 import { UserDTO } from './user-dtos/user.dto';
@@ -18,12 +19,20 @@ import { UsersService } from './users.service';
 @Controller('auth')
 @Serialize(UserDTO) // importujemo dekorator na celom kontroleru
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    private authService: AuthService,
+  ) {}
 
   @Post('signup')
   createUser(@Body() body: CreateUserDTO) {
     //koristimo Body dekorator da kazemo nestjs-u da zelimo da extract-ujemo body iz request-a
-    this.usersService.create(body);
+    return this.authService.signup(body.email, body.password);
+  }
+
+  @Post('signin')
+  signin(@Body() body: CreateUserDTO) {
+    return this.authService.signin(body.email, body.password);
   }
 
   //@UseInterceptors(ClassSerializerInterceptor) // kazemo da prilikom get requesta koristi interceptore i prosledjujemo mu koje

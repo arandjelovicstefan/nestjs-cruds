@@ -13,8 +13,8 @@ export class UsersService {
   //usersRepository - ime repozitorijuma, kazemo da ce usersRepository da bude instanca od Repository koja ce da sadrzi objekte kao sto je User
   //InjectRepository je obavezan zbog dependency injection jer koristimo genericki tip
 
-  create(user: CreateUserDTO) {
-    const createUser = this.usersRepository.create(user); // sa create pravimo novu instancu entiteta u bazi dok sa save cuvamo
+  create(email: string, password: string) {
+    const createUser = this.usersRepository.create({ email, password }); // sa create pravimo novu instancu entiteta u bazi dok sa save cuvamo
     return this.usersRepository.save(createUser);
   }
 
