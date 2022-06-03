@@ -4,7 +4,7 @@ import {
   NestInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 import { map, Observable } from 'rxjs';
 
 interface ClassConstructor {
@@ -13,16 +13,13 @@ interface ClassConstructor {
 
 class SerializeInterceptor implements NestInterceptor {
   constructor(private DTO: ClassConstructor) {}
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<any> | Promise<Observable<any>> {
+  intercept(context: ExecutionContext, next: CallHandler) {
     // run something before a request is handled by the request handler
 
     return next.handle().pipe(
       map((data: any) => {
         // run something before the response is sent out
-        return plainToClass(this.DTO, data, {
+        return plainToInstance(this.DTO, data, {
           excludeExtraneousValues: true,
         });
         //prvi parametar je DTO kakav ce biti vracen user-u, samo property koji su oznaceni sa expose bice vraceni

@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDTO } from './user-dtos/create-user.dto';
 import { User } from './users.entity';
 
 @Injectable()
@@ -19,6 +18,7 @@ export class UsersService {
   }
 
   findOne(id: number) {
+    if (!id) return null;
     return this.usersRepository.findOne(id);
   }
 
@@ -28,7 +28,7 @@ export class UsersService {
     return this.usersRepository.find({ email });
   }
 
-  //Partial je type helper integrisan u TypeScript-u koji ce da napravi da svaka opcija iz klase User bude opciona !
+  //Partial je type helper integrisan u TypeScript-u koji ce da napravi da svaki property iz klase User bude opciona !
   async update(id: number, attributes: Partial<User>) {
     const user = await this.findOne(id);
     // if (!user) throw new Error('User not found'); NIKAD NE BI TREBALI DA VRACAMO ERROR UNUTAR SERVISA JER NEST.JS NE ZNA KAKO DA HANDLE-UJE TAKAV ERROR
